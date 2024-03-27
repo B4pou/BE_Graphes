@@ -41,8 +41,7 @@ public final class Node { //implements Comparable<Node> {
      * 
      * @return The newly created forward arc (origin to destination).
      */
-    public static Arc linkNodes(Node origin, Node destination, float length,
-            RoadInformation roadInformation, ArrayList<Point> points) {
+    public static Arc linkNodes(Node origin, Node destination, float length, RoadInformation roadInformation, ArrayList<Point> points) {
         Arc arc = null;
         if (roadInformation.isOneWay()) {
             arc = new ArcForward(origin, destination, length, roadInformation, points);

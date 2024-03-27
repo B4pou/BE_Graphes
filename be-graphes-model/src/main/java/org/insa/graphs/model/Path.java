@@ -2,6 +2,7 @@ package org.insa.graphs.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,12 +31,42 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
-    public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
-            throws IllegalArgumentException {
+    public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes) throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+        Iterator<Node> iterateur = nodes.iterator();
+
+        Node node;
+        Node nextNode;
+        double min;
+        Arc minArc;
+        try {  // Erreur si la liste est vide
+            node = iterateur.next();
+        } catch (Exception e) {
+            return new Path(graph);
+        }
+
+        while(iterateur.hasNext()){
+            nextNode = iterateur.next();
+            min = -1;
+            minArc = null;
+
+            List<Arc> successor = node.getSuccessors();
+
+            for (Arc arc : successor){
+                if (nextNode.equals(arc.getDestination())){  // Test si l'arc connecte les 2 noeuds
+                    if (min == -1 || arc.getMinimumTravelTime() < min){
+                        minArc = arc;
+                        min = arc.getMinimumTravelTime();
+                    }
+                }
+            }
+            if (min == -1) throw new IllegalArgumentException();  // Cas où les noeuds ne sont pas connectés
+            arcs.add(minArc);
+            node = nextNode;
+        }
+
+        if (arcs.size() == 0) return new Path(graph, node);
         return new Path(graph, arcs);
     }
 
@@ -48,15 +79,47 @@ public class Path {
      * 
      * @return A path that goes through the given list of nodes.
      * 
-     * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
+     * @throws IllegalArgumentException If the list ofeturn new Path(graph) nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
-    public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
-            throws IllegalArgumentException {
+    public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes) throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+        Iterator<Node> iterateur = nodes.iterator();
+
+        Node node;
+        Node nextNode;
+        float min;
+        Arc minArc;
+        try {  // Erreur si la liste est vide
+            node = iterateur.next();
+        } catch (Exception e) {
+            return new Path(graph);
+        }
+
+
+
+        while(iterateur.hasNext()){
+            nextNode = iterateur.next();
+            min = -1;
+            minArc = null;
+
+            List<Arc> successor = node.getSuccessors();
+
+            for (Arc arc : successor){
+                if (nextNode.equals(arc.getDestination())){  // Test si l'arc connecte les 2 noeuds
+                    if (min == -1 || arc.getLength() < min){
+                        minArc = arc;
+                        min = arc.getLength();
+                    }
+                }
+            }
+            if (min == -1) throw new IllegalArgumentException(); // Cas où les noeuds ne sont pas connectés
+            arcs.add(minArc);
+            node = nextNode;
+        }
+
+        if (arcs.size() == 0) return new Path(graph, node);
         return new Path(graph, arcs);
     }
 
@@ -112,7 +175,7 @@ public class Path {
         this.graph = graph;
         this.origin = null;
         this.arcs = new ArrayList<>();
-    }
+    }// Erreur si la liste est vide
 
     /**
      * Create a new path containing a single node.
@@ -130,7 +193,7 @@ public class Path {
      * Create a new path with the given list of arcs.
      * 
      * @param graph Graph containing the path.
-     * @param arcs Arcs to construct the path.
+     * @param arcs Arcs to constr// Erreur si la liste est videuct the path.
      */
     public Path(Graph graph, List<Arc> arcs) {
         this.graph = graph;
