@@ -71,9 +71,7 @@ public class AlgorithmFactory {
      *                   algorithm and/or no constructor that takes a single
      *                   parameter of type (data.getClass()) exists.
      */
-    public static AbstractAlgorithm<?> createAlgorithm(
-            Class<? extends AbstractAlgorithm<?>> algorithm, AbstractInputData data)
-            throws Exception {
+    public static AbstractAlgorithm<?> createAlgorithm(Class<? extends AbstractAlgorithm<?>> algorithm, AbstractInputData data) throws Exception {
         // Retrieve the set of constructors for the given algorithm class.
         Constructor<?>[] constructors = algorithm.getDeclaredConstructors();
 
