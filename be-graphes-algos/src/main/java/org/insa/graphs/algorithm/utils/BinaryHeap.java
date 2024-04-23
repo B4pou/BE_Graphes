@@ -74,9 +74,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     private void percolateUp(int index) {
         E x = this.array.get(index);
 
-        for (; index > 0
-                && x.compareTo(this.array.get(indexParent(index))) < 0; index = indexParent(
-                        index)) {
+        for (; index > 0 && x.compareTo(this.array.get(indexParent(index))) < 0; index = indexParent(index)) {
             E moving_val = this.array.get(indexParent(index));
             this.arraySet(index, moving_val);
         }
