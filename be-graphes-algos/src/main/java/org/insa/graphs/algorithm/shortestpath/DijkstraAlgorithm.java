@@ -32,15 +32,35 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         heap.insert(originLabel);
 
         while(! heap.isEmpty()) {
-            Label currentLabel = heap.deleteMin();
+            //Label currentLabel = heap.deleteMin();
+            Label currentLabel = heap.findMin();
+            heap.remove(currentLabel);
             currentLabel.setMarque();
+            Node currentNode = currentLabel.getSommetCourant();
 
-            List<Arc> successor = currentLabel.getSommetCourant().getSuccessors();
+            if (currentLabel == originLabel) {
+                this.notifyOriginProcessed(currentNode);
+            } else if (currentNode == data.getDestination()) {
+                break;
+            }
+            
+            this.notifyNodeMarked(currentNode);
+            
+
+            List<Arc> successor = currentNode.getSuccessors();
 
             for (Arc arc : successor) {
+                if (! data.isAllowed(arc)) continue;
+
+                if (arc.getDestination() == data.getDestination()) {
+                    this.notifyDestinationReached(currentNode);
+                }
+                
+                this.notifyNodeReached(arc.getDestination());
+                
                 Label successorLabel = labelArray.get(arc.getDestination().getId());
 
-                double cost = arc.getLength() + currentLabel.getCoutRealise();
+                double cost = data.getCost(arc) + currentLabel.getCoutRealise();
                 if (cost < successorLabel.getCoutRealise()) {  // Si on trouve un meilleur chemin
                     successorLabel.setArcPere(arc);
                     successorLabel.setCoutRealise(cost);
@@ -50,11 +70,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
                     }
                     heap.insert(successorLabel);
-                    
-                    
-
                 }
-                
             }
         }
 
@@ -75,7 +91,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Label currentLabel = destinationLabel;
 
         while (currentLabel.getArcPere() != null) {
-            System.out.println(currentLabel.getArcPere());
             arcs.add(currentLabel.getArcPere());
             currentLabel = labelArray.get(currentLabel.getArcPere().getOrigin().getId());
         }
