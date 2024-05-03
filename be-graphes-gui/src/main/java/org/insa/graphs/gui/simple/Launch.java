@@ -69,6 +69,7 @@ public class Launch {
         drawing.drawGraph(graph);
 
         ShortestPathData data = new ShortestPathData(graph, graph.getNodes().get(679), graph.getNodes().get(77), ArcInspectorFactory.getAllFilters().get(0));
+        
         DijkstraAlgorithm dij = new DijkstraAlgorithm(data);
         BellmanFordAlgorithm bel = new BellmanFordAlgorithm(data);
         

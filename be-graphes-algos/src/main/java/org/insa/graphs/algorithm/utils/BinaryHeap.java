@@ -134,7 +134,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }
 
     @Override
-    public void remove(E x) throws ElementNotFoundException {
+    public void remove(E x) throws ElementNotFoundException {  // Vérifier si on essaie d'enlever le dernier élément
 
         if (this.isEmpty()) {
             throw new ElementNotFoundException(x);
@@ -148,8 +148,10 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         this.arraySet(index, dernier);
 
         // On essaie de percoler vers le haut et vers le bas suivant la valeur du dernier élément
-        this.percolateDown(index);
-        this.percolateUp(index);
+        if (index < this.currentSize) {
+            this.percolateDown(index);
+            this.percolateUp(index);
+        }
     }
 
     @Override
