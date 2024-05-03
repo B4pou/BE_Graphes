@@ -9,6 +9,12 @@ import java.io.FileInputStream;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.insa.graphs.algorithm.AbstractInputData;
+import org.insa.graphs.algorithm.ArcInspectorFactory;
+import org.insa.graphs.algorithm.ArcInspector;
+import org.insa.graphs.algorithm.shortestpath.BellmanFordAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
 import org.insa.graphs.gui.drawing.Drawing;
 import org.insa.graphs.gui.drawing.components.BasicDrawing;
 import org.insa.graphs.model.Graph;
@@ -48,7 +54,7 @@ public class Launch {
 
         // Visit these directory to see the list of available files on Commetud.
         final String mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
-        final String pathName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
+        // final String pathName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
 
         // Create a graph reader.
         final GraphReader reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
@@ -62,18 +68,29 @@ public class Launch {
         // Draw the graph on the drawing.
         drawing.drawGraph(graph);
 
+        ShortestPathData data = new ShortestPathData(graph, graph.getNodes().get(679), graph.getNodes().get(77), ArcInspectorFactory.getAllFilters().get(0));
+        DijkstraAlgorithm dij = new DijkstraAlgorithm(data);
+        BellmanFordAlgorithm bel = new BellmanFordAlgorithm(data);
+        
+        Path pathDij = dij.run().getPath();
+        Path pathBel = bel.run().getPath();
+
+
+
+
         // Create a PathReader.
-        final PathReader pathReader = new BinaryPathReader(new DataInputStream(new BufferedInputStream(new FileInputStream(pathName))));
+        //final PathReader pathReader = new BinaryPathReader(new DataInputStream(new BufferedInputStream(new FileInputStream(pathName))));
 
         // Read the path.
-        final Path path = pathReader.readPath(graph);
+        //final Path path = pathReader.readPath(graph);
 
         // Draw the path.
-        drawing.drawPath(path);
+        drawing.drawPath(pathDij);
+        drawing.drawPath(pathBel);
 
         // Close paths
         reader.close();
-        pathReader.close(); 
+        //pathReader.close(); 
     }
 
 }
