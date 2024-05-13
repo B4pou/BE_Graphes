@@ -42,11 +42,12 @@ public class DijkstraAstarTest {
     public static GraphReader reader;
     public static String mapName;
 
-    public static ShortestPathData dataNormal, dataImpossible;
-    public static DijkstraAlgorithm dijNormal;
-    public static BellmanFordAlgorithm belNormal;
-    public static ShortestPathSolution solutionDij;
-    public static ShortestPathSolution solutionBel;
+    public static ShortestPathData data;
+    public static DijkstraAlgorithm dij;
+    public static BellmanFordAlgorithm bel;
+    public static ShortestPathSolution solutionDijNormalAll, solutionDijNormalCars, solutionDijNormalPedest, solutionDijImpossibleCars, solutionDijImpossiblePedest;
+    public static ShortestPathSolution solutionBelNormalAll, solutionBelNormalCars, solutionBelNormalPedest, solutionBelImpossibleCars, solutionBelImpossiblePedest;
+
 
     @BeforeClass
     public static void initAll() throws IOException {
@@ -61,14 +62,21 @@ public class DijkstraAstarTest {
         graph = reader.read();
 
 
-        dataNormal = new ShortestPathData(graph, graph.getNodes().get(468), graph.getNodes().get(4683), ArcInspectorFactory.getAllFilters().get(0));  // Chemin existant, tout véhicule
-        dataImpossible = new ShortestPathData(graph, graph.getNodes().get(22346), graph.getNodes().get(18274), ArcInspectorFactory.getAllFilters().get(0));  // Chemin inexistant, tout véhicule
-        
-        dijNormal = new DijkstraAlgorithm(dataNormal);
-        belNormal = new BellmanFordAlgorithm(dataNormal);
+        data = new ShortestPathData(graph, graph.getNodes().get(468), graph.getNodes().get(4683), ArcInspectorFactory.getAllFilters().get(0));  // Chemin existant, tout véhicule
 
-        solutionDij = dijNormal.run();
-        solutionBel = belNormal.run();
+        dij = new DijkstraAlgorithm(data);
+        bel = new BellmanFordAlgorithm(data);
+
+        solutionDijNormalAll = dij.run();
+        solutionBelNormalAll = bel.run();
+        
+        data = new ShortestPathData(graph, graph.getNodes().get(468), graph.getNodes().get(4683), ArcInspectorFactory.getAllFilters().get(0));  // Chemin existant, tout véhicule
+        
+        dij = new DijkstraAlgorithm(data);
+        bel = new BellmanFordAlgorithm(data);
+
+        solutionDijNormalAll = dij.run();
+        solutionBelNormalAll = bel.run();
        
     }
 
