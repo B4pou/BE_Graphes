@@ -69,7 +69,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                     }
 
                     if (successorLabel.getCoutRealise() < Double.MAX_VALUE) {
-                        System.out.println("suppression element, taille : "+ heap);
+                        //System.out.println("suppression element, taille : "+ heap);
                         heap.remove(successorLabel);
                     } 
                     
@@ -78,7 +78,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
                     
                     heap.insert(successorLabel);
-                    System.out.println("insertion element, taille : "+ heap);
+                    //System.out.println("insertion element, taille : "+ heap);
                 }
             }
         }

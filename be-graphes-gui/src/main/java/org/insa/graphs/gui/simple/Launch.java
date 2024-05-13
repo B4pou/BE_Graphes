@@ -76,6 +76,8 @@ public class Launch {
         Path pathDij = dij.run().getPath();
         Path pathBel = bel.run().getPath();
 
+        pathDij.getLength();
+
 
 
 
