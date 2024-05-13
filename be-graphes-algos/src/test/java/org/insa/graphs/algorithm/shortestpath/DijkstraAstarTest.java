@@ -45,8 +45,8 @@ public class DijkstraAstarTest {
     public static ShortestPathData data;
     public static DijkstraAlgorithm dij;
     public static BellmanFordAlgorithm bel;
-    public static ShortestPathSolution solutionDijNormalAll, solutionDijImpossibleAll, solutionDijSameAll;
-    public static ShortestPathSolution solutionBelNormalAll, solutionBelImpossibleAll, solutionbelSameAll;
+    public static ShortestPathSolution solutionDijNormalAll, solutionDijImpossibleAll, solutionDijSameAll, solutionDijNormalCars, solutionDijNormalPedest, solutionDijImpossibleCars, solutionDijImpossiblePedest;
+    public static ShortestPathSolution solutionBelNormalAll, solutionBelImpossibleAll, solutionbelSameAll, solutionBelNormalCars, solutionBelNormalPedest, solutionBelImpossibleCars, solutionBelImpossiblePedest;
 
     @BeforeClass
     public static void initAll() throws IOException {
