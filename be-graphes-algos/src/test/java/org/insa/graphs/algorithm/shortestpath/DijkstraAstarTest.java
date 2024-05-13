@@ -42,11 +42,11 @@ public class DijkstraAstarTest {
     public static GraphReader reader;
     public static String mapName;
 
-    public static ShortestPathData dataNormal, dataImpossible;
-    public static DijkstraAlgorithm dijNormal;
-    public static BellmanFordAlgorithm belNormal;
-    public static ShortestPathSolution solutionDij;
-    public static ShortestPathSolution solutionBel;
+    public static ShortestPathData data;
+    public static DijkstraAlgorithm dij;
+    public static BellmanFordAlgorithm bel;
+    public static ShortestPathSolution solutionDijNormalAll, solutionDijImpossibleAll, solutionDijSameAll;
+    public static ShortestPathSolution solutionBelNormalAll, solutionBelImpossibleAll, solutionbelSameAll;
 
     @BeforeClass
     public static void initAll() throws IOException {
@@ -61,31 +61,65 @@ public class DijkstraAstarTest {
         graph = reader.read();
 
 
-        dataNormal = new ShortestPathData(graph, graph.getNodes().get(468), graph.getNodes().get(4683), ArcInspectorFactory.getAllFilters().get(0));  // Chemin existant, tout véhicule
-        dataImpossible = new ShortestPathData(graph, graph.getNodes().get(22346), graph.getNodes().get(18274), ArcInspectorFactory.getAllFilters().get(0));  // Chemin inexistant, tout véhicule
-        
-        dijNormal = new DijkstraAlgorithm(dataNormal);
-        belNormal = new BellmanFordAlgorithm(dataNormal);
+        // Chemin existant, tout véhicule
+        data = new ShortestPathData(graph, graph.getNodes().get(468), graph.getNodes().get(4683), ArcInspectorFactory.getAllFilters().get(0));
 
-        solutionDij = dijNormal.run();
-        solutionBel = belNormal.run();
+        dij = new DijkstraAlgorithm(data);
+        bel = new BellmanFordAlgorithm(data);
+
+        solutionDijNormalAll = dij.run();
+        solutionBelNormalAll = bel.run();
+
+
+        // Chemin inexistant, tout véhicule
+        data = new ShortestPathData(graph, graph.getNodes().get(22346), graph.getNodes().get(18274), ArcInspectorFactory.getAllFilters().get(0));
+        
+        dij = new DijkstraAlgorithm(data);
+        bel = new BellmanFordAlgorithm(data);
+
+        solutionDijImpossibleAll = dij.run();
+        solutionBelImpossibleAll = bel.run();
+
+
+        // Origine = Destination, tout véhicule
+        data = new ShortestPathData(graph, graph.getNodes().get(354), graph.getNodes().get(354), ArcInspectorFactory.getAllFilters().get(0));
+        
+        dij = new DijkstraAlgorithm(data);
+        bel = new BellmanFordAlgorithm(data);
+
+        solutionDijSameAll = dij.run();
+        solutionbelSameAll = bel.run();
+        
        
+    }
+
+    @Test
+    public void testImpossible() {
+        assertEquals(solutionBelNormalAll.isFeasible(), solutionDijNormalAll.isFeasible());
+        assertEquals(solutionBelImpossibleAll.isFeasible(), solutionDijImpossibleAll.isFeasible());
+        assertTrue(solutionDijSameAll.isFeasible());
     }
 
 
     @Test
     public void testLongueur() {
-        Path pathDij = solutionDij.getPath();
-        Path pathBel = solutionBel.getPath();
+        Path pathDijNormalAll = solutionDijNormalAll.getPath();
+        Path pathDijSameAll = solutionDijSameAll.getPath();
 
-        assertEquals(pathBel.getLength(), pathDij.getLength(), 1e-6);
+        Path pathBelNormalAll = solutionBelNormalAll.getPath();
+
+        assertEquals(pathBelNormalAll.getLength(), pathDijNormalAll.getLength(), 1e-6);
+        assertEquals(0, pathDijSameAll.getLength(), 1e-6);
     }
 
     @Test
     public void testVitesse() {
-        Path pathDij = solutionDij.getPath();
-        Path pathBel = solutionBel.getPath();
+        Path pathDijNormalAll = solutionDijNormalAll.getPath();
+        Path pathDijSameAll = solutionDijSameAll.getPath();
 
-        assertEquals(pathBel.getMinimumTravelTime(), pathDij.getMinimumTravelTime(), 1e-6);
+        Path pathBelNormalAll = solutionBelNormalAll.getPath();
+
+        assertEquals(pathBelNormalAll.getMinimumTravelTime(), pathDijNormalAll.getMinimumTravelTime(), 1e-6);
+        assertEquals(0, pathDijSameAll.getMinimumTravelTime(), 1e-6);
     }
 }
