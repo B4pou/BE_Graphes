@@ -3,10 +3,10 @@ package org.insa.graphs.algorithm.shortestpath;
 import org.insa.graphs.model.*;
 
 public class Label implements Comparable<Label> {
-    private Node sommetCourant;
-    private boolean marque;
-    private double coutRealise;
-    private Arc arcPere;
+    protected Node sommetCourant;
+    protected boolean marque;
+    protected double coutRealise;
+    protected Arc arcPere;
 
 
     public Label(Node sommetCourant) {
@@ -53,11 +53,11 @@ public class Label implements Comparable<Label> {
     }
 
     public double getCost() {
-        return this.getCoutRealise();
+        return this.coutRealise;
     }
 
     public int compareTo(Label label) {
-        double difference = this.getCoutRealise() - label.getCoutRealise();
+        double difference = this.getCost() - label.getCost();
         if (difference < 0) {
             return -1;
 
@@ -65,7 +65,16 @@ public class Label implements Comparable<Label> {
             return 1;
 
         } else {
-            return 0;
+            difference = this.getCoutRealise() - label.getCoutRealise();
+            if (difference < 0) {
+                return 1;
+    
+            } else if (difference > 0) {
+                return -1;
+
+            } else {
+                return 0;
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Label[] labelArray = new Label[data.getGraph().size()];  // Le label à l'indice i est associé au noeud n°i
 
         for (Node node : data.getGraph().getNodes()) {  // Initialisation du tableau
-            labelArray[node.getId()] = new Label(node);
+            labelArray[node.getId()] = initLabel(node, data.getDestination());
         }
         
         Label originLabel = labelArray[data.getOrigin().getId()];
@@ -114,4 +114,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     }
 
 
+    protected Label initLabel(Node sommetCourant, Node destination) {
+        return new Label(sommetCourant);
+    }
 }
+
