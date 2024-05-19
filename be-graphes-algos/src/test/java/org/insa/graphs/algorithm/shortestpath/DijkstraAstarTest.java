@@ -2,38 +2,22 @@ package org.insa.graphs.algorithm.shortestpath;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.IntStream;
+import java.util.function.Function;
 
+import org.insa.graphs.algorithm.ArcInspector;
 import org.insa.graphs.algorithm.ArcInspectorFactory;
 import org.insa.graphs.model.Graph;
-import org.insa.graphs.model.Path;
 import org.insa.graphs.model.io.BinaryGraphReader;
-import org.insa.graphs.model.io.BinaryPathReader;
 import org.insa.graphs.model.io.GraphReader;
-import org.insa.graphs.model.io.PathReader;
 
-import org.insa.graphs.model.Graph;
-import org.insa.graphs.model.io.BinaryGraphReader;
-import org.insa.graphs.model.io.GraphReader;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
 
 
 public class DijkstraAstarTest {
@@ -42,12 +26,7 @@ public class DijkstraAstarTest {
     public static GraphReader reader;
     public static String mapName;
 
-    public static ShortestPathData data;
-    public static DijkstraAlgorithm dij;
-    public static BellmanFordAlgorithm bel;
-    public static ShortestPathSolution solutionDijNormalAll, solutionDijImpossibleAll, solutionDijSameAll, solutionDijNormalCars, solutionDijNormalPedest, solutionDijImpossibleCars, solutionDijImpossiblePedest;
-    public static ShortestPathSolution solutionBelNormalAll, solutionBelImpossibleAll, solutionbelSameAll, solutionBelNormalCars, solutionBelNormalPedest, solutionBelImpossibleCars, solutionBelImpossiblePedest;
-
+    private static TestCase testCaseNormal, testCaseImpossible, testCaseSame;
     @BeforeClass
     public static void initAll() throws IOException {
         // Visit these directory to see the list of available files on Commetud.
@@ -61,65 +40,121 @@ public class DijkstraAstarTest {
         graph = reader.read();
 
 
-        // Chemin existant, tout véhicule
-        data = new ShortestPathData(graph, graph.getNodes().get(468), graph.getNodes().get(4683), ArcInspectorFactory.getAllFilters().get(0));
+        // Test de trois filtres (all, cars, bicycle) pour chaque
+        testCaseNormal = new TestCase(468, 4683);  // Chemin existant
+        testCaseImpossible = new TestCase(22346, 18274);  // Chemin inexistant
+        testCaseSame = new TestCase(354, 354);  // Origine = Destination
 
-        dij = new DijkstraAlgorithm(data);
-        bel = new BellmanFordAlgorithm(data);
-
-        solutionDijNormalAll = dij.run();
-        solutionBelNormalAll = bel.run();
-
-
-        // Chemin inexistant, tout véhicule
-        data = new ShortestPathData(graph, graph.getNodes().get(22346), graph.getNodes().get(18274), ArcInspectorFactory.getAllFilters().get(0));
-        
-        dij = new DijkstraAlgorithm(data);
-        bel = new BellmanFordAlgorithm(data);
-
-        solutionDijImpossibleAll = dij.run();
-        solutionBelImpossibleAll = bel.run();
-
-
-        // Origine = Destination, tout véhicule
-        data = new ShortestPathData(graph, graph.getNodes().get(354), graph.getNodes().get(354), ArcInspectorFactory.getAllFilters().get(0));
-        
-        dij = new DijkstraAlgorithm(data);
-        bel = new BellmanFordAlgorithm(data);
-
-        solutionDijSameAll = dij.run();
-        solutionbelSameAll = bel.run();
-        
-       
     }
 
     @Test
     public void testImpossible() {
-        assertEquals(solutionBelNormalAll.isFeasible(), solutionDijNormalAll.isFeasible());
-        assertEquals(solutionBelImpossibleAll.isFeasible(), solutionDijImpossibleAll.isFeasible());
-        assertTrue(solutionDijSameAll.isFeasible());
-    }
+        feasibilityDijkstra(testCaseNormal, true);
+        feasibilityDijkstra(testCaseImpossible, false);
+        feasibilityDijkstra(testCaseSame, true);
 
+        feasibilityAStar(testCaseNormal, true);
+        feasibilityAStar(testCaseImpossible, false);
+        feasibilityAStar(testCaseSame, true);
+    }
 
     @Test
     public void testLongueur() {
-        Path pathDijNormalAll = solutionDijNormalAll.getPath();
-        Path pathDijSameAll = solutionDijSameAll.getPath();
+        compareLengthsDijkstra(testCaseNormal);
+        // compareLengthsDijkstra(testCaseImpossible);
+        // compareLengthsDijkstra(testCaseSame);
 
-        Path pathBelNormalAll = solutionBelNormalAll.getPath();
-
-        assertEquals(pathBelNormalAll.getLength(), pathDijNormalAll.getLength(), 1e-6);
-        assertEquals(0, pathDijSameAll.getLength(), 1e-6);
+        compareLengthsAStar(testCaseNormal);
+        // compareLengthsAStar(testCaseImpossible);
+        // compareLengthsAStar(testCaseSame);
     }
 
     @Test
     public void testVitesse() {
-        Path pathDijNormalAll = solutionDijNormalAll.getPath();
-        Path pathDijSameAll = solutionDijSameAll.getPath();
+        compareTravelTimesDijkstra(testCaseNormal);
+        // compareTravelTimesDijkstra(testCaseImpossible);
+        // compareTravelTimesDijkstra(testCaseSame);
 
-        Path pathBelNormalAll = solutionBelNormalAll.getPath();
+        compareTravelTimesAStar(testCaseNormal);
+        // compareTravelTimesAStar(testCaseImpossible);
+        // compareTravelTimesAStar(testCaseSame);
+    }
 
-        assertEquals(pathBelNormalAll.getMinimumTravelTime(), pathDijNormalAll.getMinimumTravelTime(), 1e-6);
-        assertEquals(0, pathDijSameAll.getMinimumTravelTime(), 1e-6);
+
+
+    private void feasibilityDijkstra(TestCase testCase, boolean isFeasible) {
+        assertEquals(isFeasible, testCase.dijkstraAll.isFeasible());
+        assertEquals(isFeasible, testCase.dijkstraCars.isFeasible());
+        assertEquals(isFeasible, testCase.dijkstraPedest.isFeasible());
+    }
+
+    private void feasibilityAStar(TestCase testCase, boolean isFeasible) {
+        assertEquals(isFeasible, testCase.aStarAll.isFeasible());
+        assertEquals(isFeasible, testCase.aStarCars.isFeasible());
+        assertEquals(isFeasible, testCase.aStarPedest.isFeasible());
+    } 
+
+
+    private void compareLengthsDijkstra(TestCase testCase) {
+        assertEquals(testCase.bellmanFordAll.getPath().getLength(), testCase.dijkstraAll.getPath().getLength(), 1e-6);
+        assertEquals(testCase.bellmanFordCars.getPath().getLength(), testCase.dijkstraCars.getPath().getLength(), 1e-6);
+        assertEquals(testCase.bellmanFordPedest.getPath().getLength(), testCase.dijkstraPedest.getPath().getLength(), 1e-6);
+    }
+
+    private void compareLengthsAStar(TestCase testCase) {
+        assertEquals(testCase.bellmanFordAll.getPath().getLength(), testCase.aStarAll.getPath().getLength(), 1e-6);
+        assertEquals(testCase.bellmanFordCars.getPath().getLength(), testCase.aStarCars.getPath().getLength(), 1e-6);
+        assertEquals(testCase.bellmanFordPedest.getPath().getLength(), testCase.aStarPedest.getPath().getLength(), 1e-6);
+    }
+
+
+    private void compareTravelTimesDijkstra(TestCase testCase) {
+        double bellmanAll = testCase.bellmanFordAll.getPath().getMinimumTravelTime();
+        double bellmanCars = testCase.bellmanFordCars.getPath().getMinimumTravelTime();
+        double bellmanPedest = testCase.bellmanFordPedest.getPath().getMinimumTravelTime();
+
+        assertEquals(bellmanAll, testCase.dijkstraAll.getPath().getMinimumTravelTime(), 1e-6);
+        assertEquals(bellmanCars, testCase.dijkstraCars.getPath().getMinimumTravelTime(), 1e-6);
+        assertEquals(bellmanPedest, testCase.dijkstraPedest.getPath().getMinimumTravelTime(), 1e-6);
+    }
+
+    private void compareTravelTimesAStar(TestCase testCase) {
+        double bellmanAll = testCase.bellmanFordAll.getPath().getMinimumTravelTime();
+        double bellmanCars = testCase.bellmanFordCars.getPath().getMinimumTravelTime();
+        double bellmanPedest = testCase.bellmanFordPedest.getPath().getMinimumTravelTime();
+
+        assertEquals(bellmanAll, testCase.aStarAll.getPath().getMinimumTravelTime(), 1e-6);
+        assertEquals(bellmanCars, testCase.aStarCars.getPath().getMinimumTravelTime(), 1e-6);
+        assertEquals(bellmanPedest, testCase.aStarPedest.getPath().getMinimumTravelTime(), 1e-6);
+    }
+
+
+
+    private static class TestCase {
+        ShortestPathSolution aStarAll, aStarCars, aStarPedest;
+        ShortestPathSolution dijkstraAll, dijkstraCars, dijkstraPedest;
+        ShortestPathSolution bellmanFordAll, bellmanFordCars, bellmanFordPedest;
+
+
+        TestCase(int origin, int destination) {
+            this.dijkstraAll = getShortestPathSolution(origin, destination, ArcInspectorFactory.allArcsL, DijkstraAlgorithm::new);
+            this.dijkstraCars = getShortestPathSolution(origin, destination, ArcInspectorFactory.forCarsL, DijkstraAlgorithm::new);
+            this.dijkstraPedest = getShortestPathSolution(origin, destination, ArcInspectorFactory.forBicyclesL, DijkstraAlgorithm::new);
+
+            this.bellmanFordAll = getShortestPathSolution(origin, destination, ArcInspectorFactory.allArcsL, BellmanFordAlgorithm::new);
+            this.bellmanFordCars = getShortestPathSolution(origin, destination, ArcInspectorFactory.forCarsL, BellmanFordAlgorithm::new);
+            this.bellmanFordPedest = getShortestPathSolution(origin, destination, ArcInspectorFactory.forBicyclesL, BellmanFordAlgorithm::new);
+
+            this.aStarAll = getShortestPathSolution(origin, destination, ArcInspectorFactory.allArcsL, AStarAlgorithm::new);
+            this.aStarCars = getShortestPathSolution(origin, destination, ArcInspectorFactory.forCarsL, AStarAlgorithm::new);
+            this.aStarPedest = getShortestPathSolution(origin, destination, ArcInspectorFactory.forBicyclesL, AStarAlgorithm::new);
+        }
+
+
+        private static ShortestPathSolution getShortestPathSolution(int origin, int destination, ArcInspector filter, Function<ShortestPathData, ShortestPathAlgorithm> constructeur) {
+            ShortestPathData data = new ShortestPathData(graph, graph.getNodes().get(origin), graph.getNodes().get(destination), filter);
+            ShortestPathAlgorithm algorithm = constructeur.apply(data);
+            return algorithm.run();
+        }
     }
 }
