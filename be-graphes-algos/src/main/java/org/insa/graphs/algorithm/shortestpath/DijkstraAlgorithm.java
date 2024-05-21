@@ -3,7 +3,7 @@ package org.insa.graphs.algorithm.shortestpath;
 import java.util.*;
 
 import org.insa.graphs.model.*;
-
+import org.insa.graphs.algorithm.AbstractInputData.Mode;
 import org.insa.graphs.algorithm.AbstractSolution;
 
 import org.insa.graphs.algorithm.utils.BinaryHeap;
@@ -22,7 +22,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Label[] labelArray = new Label[data.getGraph().size()];  // Le label à l'indice i est associé au noeud n°i
 
         for (Node node : data.getGraph().getNodes()) {  // Initialisation du tableau
-            labelArray[node.getId()] = initLabel(node, data.getDestination());
+            labelArray[node.getId()] = initLabel(node, data.getDestination(), data.getMode(), data.getGraph().getGraphInformation().getMaximumSpeed());
         }
         
         Label originLabel = labelArray[data.getOrigin().getId()];
@@ -32,9 +32,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         heap.insert(originLabel);
 
         while(! heap.isEmpty()) {
-            Label currentLabel = heap.deleteMin();
-            //Label currentLabel = heap.findMin();
-            //heap.remove(currentLabel);
+            Label currentLabel = heap.findMin();
+            heap.remove(currentLabel);
+
             currentLabel.setMarque();
             Node currentNode = currentLabel.getSommetCourant();
 
@@ -114,7 +114,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     }
 
 
-    protected Label initLabel(Node sommetCourant, Node destination) {
+    protected Label initLabel(Node sommetCourant, Node destination, Mode mode, int maxSpeed) {
         return new Label(sommetCourant);
     }
 }

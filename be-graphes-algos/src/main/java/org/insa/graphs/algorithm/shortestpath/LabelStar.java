@@ -6,9 +6,9 @@ public class LabelStar extends Label {
     private double distDest;
 
 
-    public LabelStar(Node sommetCourant, Node destination) {
+    public LabelStar(Node sommetCourant, Node destination, double distDest) {
         super(sommetCourant);
-        this.distDest = Point.distance(sommetCourant.getPoint(), destination.getPoint());
+        this.distDest = distDest;
     }
 
 
