@@ -39,7 +39,7 @@ public class DijkstraAstarTest {
         // Read the graph.
         graph = reader.read();
 
-        int[] filters = {0, 1, 2}; // Indices des filtres à tester
+        int[] filters = {0, 1, 2, 3, 4, 5}; // Indices des filtres à tester
         // Test de trois filtres (all, cars, bicycle) pour chaque
         testCasesNormal = createTestCases(468, 4683, filters);  // Chemin existant
         testCasesImpossible = createTestCases(22346, 18274, filters);  // Chemin inexistant
